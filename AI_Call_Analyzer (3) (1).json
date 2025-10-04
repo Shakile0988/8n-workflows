@@ -1,0 +1,679 @@
+{
+  "name": "AI Call Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1000,
+        -160
+      ],
+      "id": "d18c92ff-0c9a-4017-8964-18e177ca0a53",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PDpJu2ov3qjSNCL2",
+          "name": "Open AI Arete Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"feedback\": {\n            \"type\": \"string\"\n        },\n        \"feedbackPlainText\": {\n            \"type\": \"string\"\n        },\n        \"score\": {\n            \"type\": \"number\",\n            \"minimum\": 1,\n            \"maximum\": 10\n        },\n        \"name of sales rep\": {\n            \"type\": \"string\"\n        },\n        \"name of client\": {\n            \"type\": \"string\"\n        },\n        \"followUpMessages\": {\n            \"type\": \"object\",\n            \"properties\": {\n                \"sms\": {\n                    \"type\": \"array\",\n                    \"items\": { \"type\": \"string\" }\n                },\n                \"email\": {\n                    \"type\": \"array\",\n                    \"items\": { \"type\": \"string\" }\n                }\n            }\n        },\n        \"marketingAnalysis\": {\n            \"type\": \"object\",\n            \"properties\": {\n                \"primaryObjection\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"Budget\", \n                        \"Timing\", \n                        \"Need Not Clear\", \n                        \"Trust/Competitor\", \n                        \"Internal Approval\", \n                        \"Other\"\n                    ]\n                },\n                \"reasonForInterest\": {\n                    \"type\": \"string\"\n                },\n                \"financialSituation\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"Tight Budget\",\n                        \"Financially Qualified\",\n                        \"No Budget Mentioned\"\n                    ]\n                },\n                \"brandAwareness\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"First Exposure\",\n                        \"Some Awareness\",\n                        \"Strong Awareness\"\n                    ]\n                },\n                \"preCallObjectionsAddressed\": {\n                    \"type\": \"string\",\n                    \"enum\": [\"Yes\", \"No\"]\n                },\n                \"marketingJourneyStage\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"First Contact\",\n                        \"Reactivation\",\n                        \"Referral\",\n                        \"Webinar Attendee\",\n                        \"Other\"\n                    ]\n                },\n                \"leadSource\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"Outbound\",\n                        \"Inbound Ad\",\n                        \"Referral\",\n                        \"Organic Search\",\n                        \"Other\"\n                    ]\n                }\n            }\n        },\n        \"dealStatus\": {\n            \"type\": \"string\",\n            \"enum\": [\"Healthy\", \"At Risk\", \"Lost\"]\n        },\n        \"riskFactors\": {\n            \"type\": \"array\",\n            \"items\": {\n                \"type\": \"string\",\n                \"enum\": [\n                    \"Competitor Mentioned\",\n                    \"No Next Step\",\n                    \"Negative Sentiment\",\n                    \"Pricing Objection\",\n                    \"Timing Objection\",\n                    \"Product Fit Concern\",\n                    \"Other\"\n                ]\n            }\n        },\n        \"recommendedActions\": {\n            \"type\": \"array\",\n            \"items\": { \"type\": \"string\" }\n        },\n        \"personalityProfile\": {\n            \"type\": \"string\",\n            \"enum\": [\n                \"Direct\",\n                \"Analytical\",\n                \"Relationship-Focused\",\n                \"Detail-Oriented\",\n                \"Big Picture Thinker\",\n                \"Other\"\n            ]\n        },\n        \"buyingSignals\": {\n            \"type\": \"string\",\n            \"enum\": [\n                \"Immediate Need\",\n                \"Evaluating Options\",\n                \"Early Research\",\n                \"Budget Approved\",\n                \"Decision Maker Engaged\",\n                \"Other\"\n            ]\n        },\n        \"painPoints\": {\n            \"type\": \"array\",\n            \"items\": {\n                \"type\": \"string\",\n                \"enum\": [\n                    \"Operational Inefficiency\",\n                    \"High Costs\",\n                    \"Competitor Performance\",\n                    \"Limited Internal Bandwidth\",\n                    \"Tech Limitations\",\n                    \"Customer Retention Issues\",\n                    \"Other\"\n                ]\n            }\n        },\n        \"winLossNotes\": {\n            \"type\": \"string\"\n        }\n    },\n    \"required\": [\n        \"score\",\n        \"feedback\",\n        \"feedbackPlainText\",\n        \"followUpMessages\",\n        \"marketingAnalysis\",\n        \"dealStatus\",\n        \"personalityProfile\",\n        \"buyingSignals\",\n        \"painPoints\"\n    ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -820,
+        -180
+      ],
+      "id": "0a9cd241-8924-417d-95f3-a256a6bcbcdd",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0931KUHV2N",
+          "mode": "list",
+          "cachedResultName": "ai-sales-call-analyzer"
+        },
+        "messageType": "block",
+        "blocksUi": "={\n    \"blocks\": [\n        {\n            \"type\": \"header\",\n            \"text\": {\n                \"type\": \"plain_text\",\n                \"text\": \"🚨 Deal Status Update: {{ $json.output.dealStatus || 'Status Not Available' }}\"\n            }\n        },\n        {\n            \"type\": \"section\",\n            \"fields\": [\n                {\n                    \"type\": \"mrkdwn\",\n                    \"text\": \"*🛑 Deal Status:*\"\n                },\n                {\n                    \"type\": \"plain_text\",\n                    \"text\": \"{{ $json.output.dealStatus || 'N/A' }}\"\n                },\n                {\n                    \"type\": \"mrkdwn\",\n                    \"text\": \"*⚠️ Risk Factors:*\"\n                },\n                {\n                    \"type\": \"plain_text\",\n                    \"text\": \"{{ ($json.output.riskFactors && $json.output.riskFactors.length) ? $json.output.riskFactors.join(', ') : 'None identified' }}\"\n                },\n                {\n                    \"type\": \"mrkdwn\",\n                    \"text\": \"*👤 Personality Profile:*\"\n                },\n                {\n                    \"type\": \"plain_text\",\n                    \"text\": \"{{ $json.output.personalityProfile || 'Not analyzed' }}\"\n                },\n                {\n                    \"type\": \"mrkdwn\",\n                    \"text\": \"*📡 Buying Signals:*\"\n                },\n                {\n                    \"type\": \"plain_text\",\n                    \"text\": \"{{ $json.output.buyingSignals || 'None detected' }}\"\n                },\n                {\n                    \"type\": \"mrkdwn\",\n                    \"text\": \"*🔥 Key Pain Points:*\"\n                },\n                {\n                    \"type\": \"plain_text\",\n                    \"text\": \"{{ ($json.output.painPoints && $json.output.painPoints.length) ? $json.output.painPoints.join(', ') : 'None identified' }}\"\n                }\n            ]\n        },\n        {\n            \"type\": \"section\",\n            \"text\": {\n                \"type\": \"mrkdwn\",\n                \"text\": \"*📋 Win/Loss Notes:*\"\n            }\n        },\n        {\n            \"type\": \"section\",\n            \"text\": {\n                \"type\": \"plain_text\",\n                \"text\": \"{{ $json.output.winLossNotes || 'No notes available.' }}\"\n            }\n        },\n        {\n            \"type\": \"divider\"\n        },\n        {\n            \"type\": \"context\",\n            \"elements\": [\n                {\n                    \"type\": \"mrkdwn\",\n                    \"text\": \"🔔 This is an automated alert from the AI Call Analysis System.\"\n                }\n            ]\n        }\n    ]\n}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -360,
+        -320
+      ],
+      "id": "701bf469-59b9-4a54-9224-8bec9ba77e7e",
+      "name": "Send a message",
+      "webhookId": "257955f6-eff8-4c3e-9d9f-15779e67960c",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "SdSAUkq8w83Sjune",
+          "name": "Ahmedn8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -1320,
+        -340
+      ],
+      "id": "da3f2874-f086-4754-bff7-7ab0918ef6cc",
+      "name": "Get transcript",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6otYTKFrdVQP5S4f",
+          "name": "Ahmedn8n AI Sales Call Analyzer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1i0omnNdhqAUURtkcirCXxXxb4nM7xF8b",
+          "mode": "list",
+          "cachedResultName": "Sales Call Transcripts",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1i0omnNdhqAUURtkcirCXxXxb4nM7xF8b"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1620,
+        -340
+      ],
+      "id": "d06b5c54-d7dd-49dc-9d11-bb3fd46bf1f8",
+      "name": "On change to folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Di2EzFdYVaelP2W2",
+          "name": "Ahmedn8n AI Sales Call Analyzer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI Agent responsible for analyzing sales call transcripts, grading the calls based on key criteria, sending performance feedback via email to the sales representative and their manager, generating follow-up messages for the sales rep if the call did not result in a sale, providing a detailed marketing analysis of the prospect for the marketing team, and detecting deals at risk.\n\n---\n\n## Context\n- The AI Agent will receive a transcript of a sales call via webhook.\n- The goal is to evaluate the call using a 1-10 scale across 5 criteria.\n- Calls are graded based on:\n    1. Quality of Questions Asked\n    2. Clarity and Structure of the Sales Pitch\n    3. Handling of Objections\n    4. Outcome of the Call\n    5. Customer Sentiment and Responses\n- After grading the call, the agent performs **six actions**:\n    1. Log the call details and scores into **Google Sheets** for tracking.\n    2. Send a **fully formatted HTML email** to both the sales rep and sales manager, summarizing the grade and tailored feedback.\n    3. If no sale occurred, generate **3 personalized follow-up messages** (both SMS and email versions) for the rep.\n    4. Generate a **separate marketing analysis report** for the marketing team.\n    5. Detect if the deal is **at risk** and generate **Slack alerts** for the sales rep and manager.\n    6. If the deal is lost or won, generate a **Win/Loss Note** summarizing why the outcome occurred and lessons learned.\n\n---\n\n## Grading Criteria (1-10 Scale)\n1. Quality of Questions Asked\n2. Clarity and Structure of the Sales Pitch\n3. Handling of Objections\n4. Outcome of the Call (goal is a sale or clear next step)\n5. Customer Sentiment and Responses\n\n---\n\n## Feedback Logic\n- If score is 5 or higher, provide:\n    - Summary of key strengths.\n    - 1 improvement area.\n- If score is below 5, provide:\n    - 2 positive feedback points.\n    - 3 actionable coaching suggestions.\n\n---\n\n## Risk Detection Logic\nA deal is considered **At Risk** if any of the following apply:\n- Overall Score < 5.\n- Negative sentiment detected (frustration, skepticism, disengagement).\n- Strong competitor mentioned as preferred.\n- No clear next step agreed upon.\n- Pricing, timing, or fit objections not resolved during the call.\n\nA deal is considered **Lost** if:\n- Prospect explicitly states they will not move forward.\n- Prospect is disqualified (wrong fit, no budget, bad timing, etc.).\n\n---\n\n## Slack Alert Templates (for At Risk Deals)\n\n### Sales Rep Slack Message\n📣 Heads up! Your deal with **Customer name** is flagged as \"At Risk.\"\n\n**Why:** List key risk factors here  \n**Next Action:** AI Suggested next action — follow-up, send case study, escalate to manager, etc.\n\nLet's turn this around — you got this!\n\n---\n\n### Sales Manager Slack Message\n⚠️ Deal Risk Alert: **Rep Name**'s deal with **Customer Name** is flagged at risk.\n\n**Score:** Score  \n**Risk Factors:** List risk factors  \n**Recommended Action:** AI Suggested next step\n\nRecommend reviewing the call to support the follow-up plan.\n\n---\n\n## Follow-Up Message Generation (if no sale)\nCreate 3 follow-up messages for the sales rep in **two formats**:\n1. **SMS-friendly (160-250 characters)**.\n2. **Email-friendly (2-3 short paragraphs)**.\n\nTone:\n- Professional but conversational.\n- Persuasive without being pushy.\n- Consultative — use techniques from SPIN Selling, Challenger Sale, or Jeremy Miner.\n\nEach message must:\n- Be personalized based on the call context.\n- Include a clear **call to action** (ask a question to re-engage).\n\n---\n\n## Marketing Analysis Report (Google Sheet Entry)\nAfter the call, log the following to a **separate Google Sheet for marketing**:\n- Date of Call\n- Client Name\n- Primary Objection\n- Reason for Interest\n- Financial Situation (budget concerns, qualified, etc.)\n- Level of Brand Awareness (first exposure, familiar, strong awareness)\n- Pre-Call Objections Addressed\n- Marketing Journey Stage (first contact, reactivation, referral, etc.)\n- Lead Source (if known)\n\n---\n\n## Win/Loss Notes (After Deal Closes)\n- If Deal is Lost:\n    - Summarize 2-3 key reasons why.\n    - Recommend process improvements for future.\n- If Deal is Won:\n    - Summarize top 3 success factors.\n    - Capture final personality insights, buying signals, and pain points.\n\nLog these directly into Close.com as a Note, or append to a **Win/Loss Google Sheet**.\n\n---\n\n## Personality Insights (Continuous Profile Building)\nFor each call, extract and log:\n- **Personality Type:** Direct, Analytical, Relationship-Focused, etc.\n- **Pain Points:** Specific objections, frustrations, challenges raised.\n- **Buying Signals:** Timeline urgency, budget clarity, decision-maker status.\n\nThese should update directly into the **lead’s custom fields in Close.com** or be added to the running lead profile note.\n\n---\n\n## Feedback Email (HTML)\nCreate a **fully formatted HTML email** to the sales rep and manager, including:\n- Overall Score (1-10)\n- Strengths and improvement areas (or positive/constructive feedback if low-scoring)\n- Encouragement and next steps\n- Professional formatting using:\n    - `<h3>` for section headings\n    - `<p>` for body text\n    - `<ul>` and `<li>` for lists\n    - `<b>` for emphasis\n\n---\n\n## Output Summary\n| Output Type | Destination |\n|---|---|\n| Feedback Email | Gmail Node |\n| Sales Performance Log | Google Sheets |\n| Marketing Analysis Log | Google Sheets |\n| Slack Alerts (At Risk) | Slack Node |\n| Personality, Pain Points, Signals | Close.com Custom Fields or Notes |\n| Win/Loss Notes | Close.com or Google Sheets |\n\n---\n\n## SOP (Standard Operating Procedure)\n1. Receive transcript via webhook.\n2. Analyze transcript using OpenAI.\n3. Assign scores and feedback.\n4. Log scores & feedback to Google Sheets.\n5. Draft and send HTML feedback email to rep & manager.\n6. Generate follow-ups if no sale.\n7. Log marketing analysis to marketing sheet.\n8. Check for \"At Risk\" status — trigger Slack alerts if needed.\n9. Track personality, pain points, and buying signals.\n10. When deal is closed, generate Win/Loss note.\n\n---\n\n## Tone & Style Guidelines\n- Supportive and constructive.\n- Direct and action-oriented for managers.\n- Encouraging for reps.\n- Clear, simple, and professional.\n\n---\n\n## Final Notes\n- Time-stamp all logged data.\n- Reinforce team accountability — no blaming individual reps.\n- Be fact-based and specific in all feedback and analysis.\n- Ensure all follow-ups follow modern consultative sales techniques.\n- additionally, also output the name of the sales rep. additionally, also output the name of the client.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -980,
+        -400
+      ],
+      "id": "947f531b-9c64-4356-b9be-bb6f62ff9245",
+      "name": "Call Analyzer AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo",
+          "mode": "list",
+          "cachedResultName": "Sales call tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Call grading",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sales Rep Name": "={{ $('Call Analyzer AI Agent').item.json.output['name of sales rep'] }}",
+            "Client Name": "={{ $('Call Analyzer AI Agent').item.json.output['name of client'] }}",
+            "Score": "={{ $('Call Analyzer AI Agent').item.json.output.score }}",
+            "Feedback": "={{ $('Call Analyzer AI Agent').item.json.output.feedbackPlainText }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Sales Rep Name",
+              "displayName": "Sales Rep Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Name",
+              "displayName": "Client Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -120,
+        -540
+      ],
+      "id": "897025be-5d50-4eac-90a4-616f72f2304e",
+      "name": "Call grading sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CO9rGjKDxlN3M1bL",
+          "name": "Ahmedn8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo",
+          "mode": "list",
+          "cachedResultName": "Sales call tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 633369532,
+          "mode": "list",
+          "cachedResultName": "Buyer intent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo/edit#gid=633369532"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Risk Factors": "={{ $('Call Analyzer AI Agent').item.json.output.riskFactors }}",
+            "Deal Status": "={{ $('Call Analyzer AI Agent').item.json.output.dealStatus }}",
+            "Client Name": "={{ $('Call Analyzer AI Agent').item.json.output['name of client'] }}",
+            "Rep Name ": "={{ $('Call Analyzer AI Agent').item.json.output['name of sales rep'] }}",
+            "Recommended Actions": "={{ $('Call Analyzer AI Agent').item.json.output.recommendedActions }}",
+            "Personality Profile": "={{ $('Call Analyzer AI Agent').item.json.output.personalityProfile }}",
+            "Buying Signals": "={{ $('Call Analyzer AI Agent').item.json.output.buyingSignals }}",
+            "Pain Points": "={{ $('Call Analyzer AI Agent').item.json.output.painPoints }}",
+            "Win-Loss Notes": "={{ $('Call Analyzer AI Agent').item.json.output.winLossNotes }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Rep Name ",
+              "displayName": "Rep Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Name",
+              "displayName": "Client Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Deal Status",
+              "displayName": "Deal Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Risk Factors",
+              "displayName": "Risk Factors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recommended Actions",
+              "displayName": "Recommended Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Personality Profile",
+              "displayName": "Personality Profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Buying Signals",
+              "displayName": "Buying Signals",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Win-Loss Notes",
+              "displayName": "Win-Loss Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -120,
+        -320
+      ],
+      "id": "941f66bc-0625-43ae-a2cd-71b274511c94",
+      "name": "Buyer intent sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CO9rGjKDxlN3M1bL",
+          "name": "Ahmedn8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo",
+          "mode": "list",
+          "cachedResultName": "Sales call tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 54964791,
+          "mode": "list",
+          "cachedResultName": "Marketing analysis",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/172hcv39SonvOr8KnS6vBeHpm0gHGW688WGPFsX5JhHo/edit#gid=54964791"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Client Name": "={{ $json.output['name of client'] }}",
+            "Lead source": "={{ $json.output.marketingAnalysis.leadSource }}",
+            "Primary Objection": "={{ $json.output.marketingAnalysis.primaryObjection }}",
+            "Reason for Interest": "={{ $json.output.marketingAnalysis.reasonForInterest }}",
+            "Financial situation": "={{ $json.output.marketingAnalysis.financialSituation }}",
+            "Pre-call objections addressed": "={{ $json.output.marketingAnalysis.preCallObjectionsAddressed }}",
+            "Brand awareness": "={{ $json.output.marketingAnalysis.brandAwareness }}",
+            "Marketing journey stage": "={{ $json.output.marketingAnalysis.marketingJourneyStage }}",
+            "Date of Call": "={{ $today }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date of Call",
+              "displayName": "Date of Call",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Name",
+              "displayName": "Client Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Primary Objection",
+              "displayName": "Primary Objection",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason for Interest",
+              "displayName": "Reason for Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Financial situation",
+              "displayName": "Financial situation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Brand awareness",
+              "displayName": "Brand awareness",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pre-call objections addressed",
+              "displayName": "Pre-call objections addressed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Marketing journey stage",
+              "displayName": "Marketing journey stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead source",
+              "displayName": "Lead source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -120,
+        -60
+      ],
+      "id": "d89ed649-3d1f-4569-87d5-a034b7369c2b",
+      "name": "Marketing analysis sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CO9rGjKDxlN3M1bL",
+          "name": "Ahmedn8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## DOWNLOAD THE GOOGLE SHEETS TEMPLATE HERE!\n**https://docs.google.com/spreadsheets/d/16dDc6bxPU0h3qKeiFJxf8bGdztUW-7gL6JsXBrcbPP0/edit?gid=0#gid=0",
+        "height": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        -660
+      ],
+      "id": "0b427bd9-58e9-4e0b-a430-4957e0cf8bda",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Add sales call transcripts to your Google Drive Folder mentioned in this node\n",
+        "height": 520
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1700,
+        -580
+      ],
+      "id": "6ec42536-3272-455e-a936-7680245d04fa",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Connect OAuth credentials by creating a new project under Google Cloud Console, configuring OAuth credentials, adding yourself as a test user and enabling Google Drive and Google Docs APIs\n",
+        "height": 180,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        -560
+      ],
+      "id": "de89108d-dfed-4547-bb41-fd45b428dddf",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "sendTo": "ahmed@antedigital.com",
+        "subject": "=Report on {{ $json.output['name of sales rep'] }}'s Sales call: {{ $json.output.score }}/10",
+        "message": "={{ $json.output.feedback }}",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -380,
+        -540
+      ],
+      "id": "14448ca2-9abf-49a7-89dc-627ab275e85f",
+      "name": "Email manager1",
+      "webhookId": "91885f20-562f-44a9-9487-0d36220a2e5a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9UbWQcd6D7zB3Wmv",
+          "name": "Ahmed.m4224"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Call Analyzer AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Call Analyzer AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Buyer intent sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get transcript": {
+      "main": [
+        [
+          {
+            "node": "Call Analyzer AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On change to folder": {
+      "main": [
+        [
+          {
+            "node": "Get transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Analyzer AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Marketing analysis sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email manager1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email manager1": {
+      "main": [
+        [
+          {
+            "node": "Call grading sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "18a0aa9c-5f85-4c0e-a162-ee9942a82904",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18b0e35db249f2a347d043bd44dc233d49d3b37e64ce338e1a27cb9b18fe66c9"
+  },
+  "id": "Z7fBUfUD3oTsEOdB",
+  "tags": []
+}
