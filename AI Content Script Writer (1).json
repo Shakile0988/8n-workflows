@@ -1,0 +1,627 @@
+{
+  "name": "AI Content Script Writer",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -880,
+        480
+      ],
+      "id": "e7af7394-807c-4fc8-90c4-d9d515da62d4",
+      "name": "4o mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "qSzbGl4G4f6dLxr1",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"date\": \"2025-07-13\",\n  \"topic\": \"How to Make Passive Income with Instagram Reels\",\n  \"hook\": \"You're wasting time scrolling—what if you could turn that into cash?\",\n  \"opening_script\": \"In this video, I’ll show you how to turn simple Instagram Reels into a passive income stream—even if you’ve never made content before. No followers needed, no dancing required. Let’s get into it.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -496,
+        464
+      ],
+      "id": "c1051051-2157-4737-b0dd-d57880141945",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "youremail@gmail.com",
+        "subject": "=Subject:  {{ $json.Topic }}",
+        "emailType": "text",
+        "message": "=Hook:  {{ $json.Hook }}\n\nOpening Script: {{ $json['Opening Script'] }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        448
+      ],
+      "id": "92eb092d-5ec3-4995-8ca8-856711d0e02b",
+      "name": "Send Email",
+      "webhookId": "e118b098-d5fb-4802-bf73-64e2be701da4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CObrRJA4HDvoCnjw",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        480
+      ],
+      "id": "6240a32b-e8d9-468b-ae1b-3f848bd1ada4",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1mSxzQoeGVbMZCU0lnl3A5kQ6JbVtHzKfu174XFOSWo4",
+          "mode": "list",
+          "cachedResultName": "Hooks & Opening Scripts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mSxzQoeGVbMZCU0lnl3A5kQ6JbVtHzKfu174XFOSWo4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hooks & Scripts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mSxzQoeGVbMZCU0lnl3A5kQ6JbVtHzKfu174XFOSWo4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.output.date }}",
+            "Topic": "={{ $json.output.topic }}",
+            "Hook": "={{ $json.output.hook }}",
+            "Opening Script": "={{ $json.output.opening_script }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hook",
+              "displayName": "Hook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Opening Script",
+              "displayName": "Opening Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -144,
+        352
+      ],
+      "id": "7865f775-e92f-4e35-9b2b-b3d4809e8a17",
+      "name": "Put In Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tj1iJyjdDUlbc3lJ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C095H2FD3GD",
+          "mode": "list",
+          "cachedResultName": "aibot"
+        },
+        "text": "={{ $('Put In Google Sheets').item.json.Topic }} topic completed\n\nCheck it out here: (your Google Sheets URL here)",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        208
+      ],
+      "id": "279bd7e0-37d9-4604-98df-812eeddaccbc",
+      "name": "Send Slack Message",
+      "webhookId": "0eb64da8-7a88-4e76-beaa-6174d370ed60",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "HCScsX0t2xn8Nfqy",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.mime_type }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "54658e41-3f4d-4445-b8d4-938751bc7d4f"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "378883e7-5c5b-4f35-8708-88a5952b27f7",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -384,
+        -160
+      ],
+      "id": "4d3e717b-630e-4b79-b82d-8ab8f582d1a4",
+      "name": "Switch Text or Voice"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        -240
+      ],
+      "id": "fbad0cbd-ff48-4cc2-99ab-e188630f2ec0",
+      "name": "Telegram File ID",
+      "webhookId": "2e0faa8c-2799-468f-be6e-9adffe74791c",
+      "credentials": {
+        "telegramApi": {
+          "id": "W6e2Zjgfv6YurvHe",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        384,
+        -240
+      ],
+      "id": "e8291d3c-9312-4b0a-a8b6-b555e30723c9",
+      "name": "Transcribe Telegram",
+      "credentials": {
+        "openAiApi": {
+          "id": "qSzbGl4G4f6dLxr1",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e7b47463-20b1-4e07-bfbf-d4a8aa232db2",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        -64
+      ],
+      "id": "0632cfb3-cc7e-49f3-a5ab-de1ddc02127a",
+      "name": "Set Text"
+    },
+    {
+      "parameters": {
+        "jsCode": "if ($input.first().json.message.from.id !== YOUR ID) {\nreturn { unauthorized: true };\n} else {\nreturn $input.all();\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        -160
+      ],
+      "id": "fd5b9091-2d0b-4d17-84be-320b19e407a4",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        -160
+      ],
+      "id": "20e01b17-4eb1-423c-8ab6-9d691f109317",
+      "name": "Telegram Topic",
+      "webhookId": "be29c624-360c-49cc-aade-d389ff6c0258",
+      "credentials": {
+        "telegramApi": {
+          "id": "W6e2Zjgfv6YurvHe",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOURIDHERE",
+        "text": "={{ $('Put In Google Sheets').item.json.Topic }} completed\n\nCheck it out here: (your Google Sheets URL here)",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        448
+      ],
+      "id": "0feeb5a5-5f0e-44b5-a9d4-7142a673134d",
+      "name": "Telegram Response",
+      "webhookId": "c3c09dab-603a-41c5-ab03-b7857fce28a7",
+      "credentials": {
+        "telegramApi": {
+          "id": "W6e2Zjgfv6YurvHe",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Topic Input  \n**The system starts with a Telegram topic submission, which can be text or voice.\nIt automatically detects the input type, transcribes recordings when needed, and prepares the text for AI processing.**  \n",
+        "height": 448,
+        "width": 1536,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        -320
+      ],
+      "id": "516b0a65-05e8-4ac5-b17b-57cb03cf0d95",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Agent  \n**The Hook & Script Agent analyzes the topic, generates a catchy title, and writes a strong opening hook and script. It uses AI models and structured parsing to ensure results are clear and formatted correctly.**  ",
+        "height": 464,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        144
+      ],
+      "id": "df23d621-9c89-4453-b281-3dfd66261442",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User query: {{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# AI Agent Prompt: Hook + 60-Second Opening Script\n\nYou are an expert content creator and scriptwriter. Your ONLY job is to write a unique, concise, and highly compelling hook followed by a short opening script.  \n\nWhen given a topic, you must:  \n- Create a hook (no more than 2 lines) that instantly grabs attention and sparks curiosity or emotion.  \n- Write an opening script (up to 60 seconds, 90–130 words) that builds intrigue, relates to the problem, and teases the value without revealing the full solution.  \n\nOutput Format:  \nReturn BOTH the hook and the opening script, clearly labeled. Do not add explanations, reasoning, or extra text.  \n\nRules:  \n- Do NOT rephrase or repeat the provided topic as the hook.  \n- Do NOT start with generic greetings like “welcome.”  \n- Use simple, conversational language.  \n- Vary the style, tone, or angle across outputs if asked for multiple.  \n- Keep the script engaging with stories, rhetorical questions, or bold statements.  \n- Always end the opening script by creating anticipation for what’s coming next.  \n- Output ONLY the hook and opening script.  \n\nExamples:  \n**Input:** \"AI for small business marketing\"  \n**Output:**  \nHook: What if your small business could market itself while you sleep?  \nOpening Script: Most business owners waste hours posting online with little to show for it. The truth is, AI tools are already helping businesses double their reach with less effort. The secret isn’t about working harder—it’s about working smarter. And in a moment, I’ll show you exactly how this shift is happening.  \n\n**Input:** \"Productivity hacks for remote workers\"  \n**Output:**  \nHook: Remote work freedom can be a trap—here’s why.  \nOpening Script: Working from home sounds amazing until you realize your day vanishes in endless distractions. From unread emails to scrolling, your productivity takes a hit. But remote pros use a handful of simple hacks to flip that around. In just a second, I’ll share what makes them so effective.  \n\n**Input:** \"Beginner fitness mistakes\"  \n**Output:**  \nHook: The biggest gym mistake isn’t what you think.  \nOpening Script: Everyone focuses on the weights, the reps, and the routines. But beginners fail because of one simple pattern that ruins their progress before it even starts. Fixing it doesn’t take months—it takes awareness. And I’ll walk you through that shift in just a moment.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        288
+      ],
+      "id": "06434025-391f-49d2-b8ac-b76db565d7f9",
+      "name": "Hook & Script Agent"
+    },
+    {
+      "parameters": {
+        "content": "# Results Output  \n**The finished script is saved into Google Sheets for\ntracking and sent directly to Slack, Gmail, and Telegram,\ngiving you multiple ways to review and use the content.**  ",
+        "height": 464,
+        "width": 800,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        144
+      ],
+      "id": "a058c435-f374-44db-a0cf-d8a316ff6426",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# AI Content Script Writer",
+        "height": 1024,
+        "width": 1568,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        -400
+      ],
+      "id": "aa370ee4-1159-4f6c-b1fa-6b3d90b48298",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "4o mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Hook & Script Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Hook & Script Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Telegram Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hook & Script Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Put In Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Slack Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Text or Voice": {
+      "main": [
+        [
+          {
+            "node": "Telegram File ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram File ID": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Switch Text or Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Telegram": {
+      "main": [
+        [
+          {
+            "node": "Hook & Script Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Text": {
+      "main": [
+        [
+          {
+            "node": "Hook & Script Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Topic": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hook & Script Agent": {
+      "main": [
+        [
+          {
+            "node": "Put In Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "93863f29-23d2-4a82-af19-7dc392dbc692",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f4c60d7d3a664b14542aa34a3002201fd330d91b96ef90bbc9a90a7fc9e3b7c"
+  },
+  "id": "NVnjyhNH5b9RYHbA",
+  "tags": []
+}
